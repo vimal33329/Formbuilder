@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Form Builder</title>
+    <link rel="stylesheet" href="public/css/bootstrap.min.css" />
+	<link rel='stylesheet' href='public/css/jquery-ui.css'/>
+	<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css"/> -->
+</head>
+<body>
+
+    <div class="container">
+
+<div class="container">
+<div class="row">
+<div class="col-12 text-center p-3 bg-dark">
+  <h2 id = "form_get_id"  >Form builder</h2> 
+  <a href="#" class="btn btn-sm btn-outline-success text-light float-left ml-5">BACK TO FORM</a>
+  <a target = '_blank' href="#" class="btn btn-sm btn-outline-success float-left ml-5">FORM LIVE URL</a>
+  <button type="button" class="btn btn-sm btn-outline-success float-right ml-2" onclick = "PushForm();">Form Push</button>
+</div>
+<div class="col-3 bg-dark text-center">
+<div class="col-12 text-center p-3 bg-light card card-body">
+<div class="row">
+<div class="col-11 p-0 ml-0 mr-0 mb-3"><h5 class = "text-dark" >ADD FORM ELEMENTS</h5></div>
+<div class="card-body">
+<button type="button" class="col-10 btn btn-outline-danger form_clear p-2 m-2">clear form</button>
+<button type="button" class="col-10 btn btn-outline-dark text-success form_input_text p-2 m-2">text</button>
+<button type="button" class="col-10 btn btn-outline-dark text-success form_input_number p-2 m-2">number</button>
+<button type="button" class="col-10 btn btn-outline-dark text-success form_input_gmail p-2 m-2">gmail</button>
+<button type="button" class="col-10 btn btn-outline-dark text-success form_input_textarea p-2 m-2">Text Area</button>
+<button type="button" class="col-10 btn btn-outline-dark text-success form_input_date p-2 m-2">Date</button>
+<button type="button" class="col-10 btn btn-outline-dark text-success form_input_option p-2 m-2">Option</button>
+<button type="button" class="col-10 btn btn-outline-dark text-success form_input_File p-2 m-2">File</button>
+<button type="button" class="col-10 btn btn-outline-dark text-success form_input_check_box p-2 m-2">Check Box</button>
+</div>
+
+</div>
+</div>
+</div>
+<div class="col-9 p-3" style = "height:100%!importent;">
+  <form id = "show_form" action="#" method = "POST" class = 'sortable-list row' ></form>
+</div>
+
+</div>
+</div>
+
+
+
+    </div>
+    
+
+		
+	
+<!-- Button trigger modal -->
+<!-- Modal 12345-->
+<!-- <div class="modal fade" id="option_model" tabindex="-1" role="dialog" aria-labelledby="option_model" aria-hidden="true"> -->
+<div class="modal fade" id="option_model" tabindex="-1" role="dialog"  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="option_model_title">Modal title</h5>
+		<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body option_date_draw">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary option_save">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>	
+<!-- Button trigger modal -->
+<!-- Modal 12345-->	
+	
+</body>
+<script src="public/js/bootstrap.bundle.min.js" ></script>
+<script src="public/js/jquery.js" ></script>
+<script src="public/js/jquery-ui.js"></script>
+
+<script>
+// Base js script...
+$(document).ready(function(){ 
+var form_data = (function() {
+  Form = [];
+  if(sessionStorage.getItem("primary_key") == null) { sessionStorage.setItem('primary_key', 100); }
+  
+  function Item(id, name, type, label, placeholder, required, readonly, ajax, data ) {
+	this.id = id;  
+    this.name = name;
+	this.type = type;
+	this.label = label;
+    this.placeholder = placeholder;
+    this.required = required;
+	this.readonly = readonly;
+	this.ajax = ajax;
+	this.data = data;
+  }
+    /* 
+	Form = [];
+	sessionStorage.setItem('primary_key', 100);
+    saveForm();
+	// */
+  function saveForm() { sessionStorage.setItem('form_data', JSON.stringify(Form)); }
+  function loadForm() { Form = JSON.parse(sessionStorage.getItem('form_data')); }
+  if (sessionStorage.getItem("form_data") != null) { loadForm(); }
+  var obj = {};
+  
+    obj.refresh = function(){
+    saveForm();
+    loadForm();
+    }
+  
+  obj.addItemToForm = function(id, name, type, label, placeholder, required, readonly, ajax, data ) {
+	id = parseInt(sessionStorage.getItem("primary_key"));
+	sessionStorage.setItem('primary_key', id+1);
+    var item = new Item(id, name, type, label, placeholder, required, readonly, ajax, data );
+    Form.push(item);
+    saveForm();
+  }
+  
+  obj.removeItemFromForm = function(id) { console.log('deleted');
+    for(var item in Form) {
+      if(Form[item].id == id) {
+        Form.splice(item, 1);
+        break;
+      }
+    }
+    saveForm();
+  }
+  
+	obj.getItemFromForm = function(id) { console.log('getting data');
+	for(var item in Form) {
+	if(Form[item].id == id) {
+	return Form[item];
+	break;
+	}
+	}
+	}  
+  
+  obj.updateItemFromForm = function(id,field,value) { console.log('updated'+field);
+    for(var item in Form) {
+      if(Form[item].id == id) {
+		switch(field){
+		case "name":
+		Form[item].name = value;
+		break;
+		case "placeholder":
+		Form[item].placeholder = value;
+		break;
+		case "required":
+		Form[item].required = value;
+		break;		
+		}
+        break;
+      }
+    }
+    saveForm();
+  }  
+
+  obj.clearForm = function() {
+    Form = [];
+    saveForm();
+  }
+  
+  obj.totalForm = function() {
+    return Form.length;
+  }
+  
+  obj.listForm = function() {
+    var FormCopy = [];
+    for(i in Form) {
+      item = Form[i];
+      itemCopy = {};
+      for(p in item) {
+        itemCopy[p] = item[p];
+
+      }
+      FormCopy.push(itemCopy)
+    }
+    return FormCopy;
+  }
+  return obj;
+})();
+
+function displayForm() {
+  var FormArray = form_data.listForm();
+  var output = "";
+  //FormArray[i].id = 0;
+  plac_hold = "Type and Enter Place Holder";
+  lable_hold = "Type and Enter Lable Name";
+  for(var i in FormArray) {
+	output += "<div id = "+FormArray[i].id+" class='col-md-12 border-success border border-3 rounded p-3 mb-1'>"
+	output += "<div class = 'row'>"	
+	output += "<label class = 'col-md-6' for='"+FormArray[i].name+"'>"+FormArray[i].name+"</label>";
+	if(FormArray[i].type != 'check_box'){
+	output += "<label class='col-md-1' title = 'mandatory input Field ' >Required </label>";
+	if(FormArray[i].required == true) {
+	output += "<div class = 'col-md-1'><input data-id="+FormArray[i].id+" data-click = false checked class=' form_update_element_required' type='checkbox' class='form-check-input' /></div>";
+	} else{
+	output += "<div class = 'col-md-1'><input data-id="+FormArray[i].id+" data-click = true class='form_update_element_required' type='checkbox' class='form-check-input' /></div>";
+	}
+	output += "<div class = 'col-md-1'><button data-id="+FormArray[i].id+" type = 'button' class = 'btn btn-sm btn-outline-danger form_delete_element'  >del</button></div>"
+	
+	}
+	switch(FormArray[i].type){
+		case "text":
+		output += "<input disabled type='text' class='form-control col-md-5' id="+FormArray[i].id+" placeholder='"+FormArray[i].placeholder+"' name = '"+FormArray[i].type+FormArray[i].id+"' />&nbsp;";
+		output += "<input style = 'width:49%' data-id="+FormArray[i].id+" class = 'form-control form_update_element_label'  placeholder = '"+lable_hold+"' ></input>&nbsp;";
+		output += "<input style = 'width:49%' data-id="+FormArray[i].id+" class = 'form-control form_update_element_placeholder'  placeholder = '"+plac_hold+"' ></input>&nbsp;";
+		break;
+		case "email":
+		output += "<input disabled type='email' class='form-control col-md-5' id="+FormArray[i].id+" placeholder='"+FormArray[i].placeholder+"' name = '"+FormArray[i].type+FormArray[i].id+"' />&nbsp;";
+		output += "<input style = 'width:49%' data-id="+FormArray[i].id+" class = 'form-control col-md-2 form_update_element_label'  placeholder = '"+lable_hold+"' ></input>&nbsp;";
+		output += "<input style = 'width:49%' data-id="+FormArray[i].id+" class = 'form-control col-md-2 form_update_element_placeholder'  placeholder = '"+plac_hold+"' ></input>&nbsp;";
+		break;
+		case "file":
+		output += "<input disabled type='file' class='form-control col-7' id="+FormArray[i].id+" placeholder='"+FormArray[i].placeholder+"' name = '"+FormArray[i].type+FormArray[i].id+"' />&nbsp;&nbsp;";
+		output += "<input style = 'width:49%' data-id="+FormArray[i].id+" class = 'form-control col-md-2 form_update_element_label'  placeholder = '"+lable_hold+"' ></input>&nbsp;";
+		break;
+		case "number":
+		output += "<input disabled type='number' class='form-control col-md-5' id="+FormArray[i].id+" placeholder='"+FormArray[i].placeholder+"' name = '"+FormArray[i].type+FormArray[i].id+"' />&nbsp;";
+		output += "<input style = 'width:49%' data-id="+FormArray[i].id+" class = 'form-control col-md-2 form_update_element_label'  placeholder = '"+lable_hold+"' ></input>&nbsp;";
+		output += "<input style = 'width:49%' data-id="+FormArray[i].id+" class = 'form-control col-md-2 form_update_element_placeholder'  placeholder = '"+plac_hold+"' ></input>&nbsp;";
+		break;
+		case "text_area":
+		output += "<textarea disabled type='text' class='form-control col-md-5' id="+FormArray[i].id+" placeholder='"+FormArray[i].placeholder+"' name = '"+FormArray[i].type+FormArray[i].id+"'></textarea>&nbsp;";
+		output += "<input style = 'width:49%' data-id="+FormArray[i].id+" class = 'form-control col-md-2 form_update_element_label'  placeholder = '"+lable_hold+"' ></input>&nbsp;";
+		output += "<input style = 'width:49%' data-id="+FormArray[i].id+" class = 'form-control col-md-2 form_update_element_placeholder'  placeholder = '"+plac_hold+"' ></input>&nbsp;";
+		break;
+		case "option":
+
+		output += "<select value = "+FormArray[i].name+" data-id="+FormArray[i].id+" class='form-control col-md-5 selectpicker'>";
+		var option_data = FormArray[i].data;
+		output += "<option>select "+FormArray[i].name+"</option>"
+		for (let j = 0; j < option_data.length; j++) {
+			output += "<option>"+option_data[j]+"</option>"
+		}
+		output += "</select>&nbsp;";	
+		output += "<input data-id="+FormArray[i].id+" class = 'form-control col-md-2 form_update_element_label'  placeholder = '"+lable_hold+"' ></input>&nbsp;"		
+		output += "<button data-id = "+FormArray[i].id+" data-toggle='modal' data-target='#option_model' type = 'button' data-id="+FormArray[i].id+" class = 'form-control col-md-2 form_update_element_add_option' >ADD OPTION</button>&nbsp;"			
+		break;
+		case "date":
+		output += "<input disabled type='text' class='form-control col-md-5' id="+FormArray[i].id+" placeholder='"+FormArray[i].placeholder+"' name = '"+FormArray[i].type+FormArray[i].id+"'></input>&nbsp;"
+		output += "<input style = 'width:49%' data-id="+FormArray[i].id+" class = 'form-control col-md-2 form_update_element_label'  placeholder = '"+lable_hold+"' ></input>&nbsp;"
+		output += "<input style = 'width:49%' data-id="+FormArray[i].id+" class = 'form-control col-md-2 form_update_element_placeholder'  placeholder = '"+plac_hold+"' ></input>&nbsp;"
+		break;
+		case "check_box":
+		output += "<input data-id="+FormArray[i].id+" data-click = false checked class='col-md-5 form_update_element_required' type='checkbox' class='form-check-input' />&nbsp;"
+		output += "<input data-id="+FormArray[i].id+" class = 'form-control col-4 form_update_element_label'  placeholder = '"+lable_hold+"' ></input>&nbsp;&nbsp;"
+		
+		break;		
+		default:
+		output += "<input disabled type='text' class='form-control col-md-5' id="+FormArray[i].id+" placeholder='"+FormArray[i].placeholder+"' name = 'email"+FormArray[i].id+"' />&nbsp;"
+		output += "<input style = 'width:49%' data-id="+FormArray[i].id+" class = 'form-control col-md-2 form_update_element_label'  placeholder = '"+lable_hold+"' ></input>&nbsp;"
+		output += "<input style = 'width:49%' data-id="+FormArray[i].id+" class = 'form-control col-md-2 form_update_element_placeholder'  placeholder = '"+plac_hold+"' ></input>&nbsp;"	
+	}
+	
+	output += "</div>"
+	output +=  "</div>";
+  }
+  $('#show_form').html(output);
+}
+
+
+
+// Base js script...
+
+// Add element codes...
+$('.form_input_text').click(function(event) {
+var newid = form_data.totalForm(); 
+console.log(newid);
+form_data.addItemToForm(newid, 'Text', 'text', 'label', 'placeholder', 'required', 'readonly', 'ajax', 'data' );
+displayForm();
+});
+
+$('.form_input_date').click(function(event) {
+var newid = form_data.totalForm(); 
+console.log(newid);
+form_data.addItemToForm(newid, 'Text', 'date', 'label', 'placeholder', 'required', 'readonly', 'ajax', 'data' );
+displayForm();
+});
+
+$('.form_input_number').click(function(event) {
+var newid = form_data.totalForm(); 
+console.log(newid);
+form_data.addItemToForm(newid, 'Number', 'number', 'label', 'placeholder', 'required', 'readonly', 'ajax', 'data' );
+displayForm();
+});
+
+$('.form_input_gmail').click(function(event) {
+var newid = form_data.totalForm(); 
+console.log(newid);
+form_data.addItemToForm(newid, 'Gmail', 'email', 'label', 'placeholder', 'required', 'readonly', 'ajax', 'data' );
+displayForm();
+});
+
+$('.form_input_textarea').click(function(event) {
+var newid = form_data.totalForm(); 
+console.log(newid);
+form_data.addItemToForm(newid, 'Text Area', 'text_area', 'label', 'placeholder', 'required', 'readonly', 'ajax', 'data' );
+displayForm();
+});
+
+$('.form_input_File').click(function(event) {
+var newid = form_data.totalForm(); 
+console.log(newid);
+form_data.addItemToForm(newid, 'File Name', 'file', 'label', 'placeholder', 'required', 'readonly', 'ajax', 'data' );
+displayForm();
+});
+
+$('.form_input_option').click(function(event) {
+var newid = form_data.totalForm(); 
+console.log(newid);
+var data = ["Yes", "No"];
+form_data.addItemToForm(newid, 'Option Name', 'option', 'label', 'placeholder', 'required', 'readonly', 'ajax', data );
+displayForm();
+});
+
+$('.form_input_check_box').click(function(event) {
+var newid = form_data.totalForm(); 
+console.log(newid);
+form_data.addItemToForm(newid, 'Check Box', 'check_box', 'label', 'placeholder', 'required', 'readonly', 'ajax', 'data' );
+displayForm();
+});
+
+// Add element end...
+
+// Dynamic Option setting...
+
+let options_values = [];
+$('#show_form').on("click", ".form_update_element_add_option", function(event) { options_values =[];
+options_values = form_data.getItemFromForm($(this).data('id'));
+$('#option_model').modal('show');
+$('#option_model_title').html(options_values.name);
+display(options_values.data);
+});	
+
+function display(option_data){ //show option values
+let option_output = "";
+$('.option_date_draw').html(option_output);
+option_output = "<div class = 'col-md-12 mb-1'><input class = 'form-control option_add' placeholder = 'add options press enter' value = ''></input></div>"
+for (let h = 0; h < option_data.length; h++) {
+option_output += "<div class = 'col-md-12 mb-1' ><div class = 'row' ><div class = 'col-md-10'><input data-node = '"+option_data[h]+"' value = '"+option_data[h]+"' class = 'form-control option_update'></input></div><div class = 'col-md-2' ><button data-node = '"+option_data[h]+"' class = 'btn btn-sm btn-outline-danger border border-light rounded ml-2 option_delete'>del</button></div> </div></div>"
+}
+$('.option_date_draw').html(option_output);
+}
+
+//$('.option_delete').click(function(event) {	
+$('.option_date_draw').on("click", ".option_delete", function(event) {
+const index = options_values.data.indexOf($(this).data('node'));
+if (index > -1) {
+options_values.data.splice(index, 1);
+}
+console.log(options_values);
+display(options_values.data);
+});
+
+$('.option_date_draw').on("change", ".option_update", function(event) {
+const index = options_values.data.indexOf($(this).data('node'));
+if (index > -1) {
+options_values.data[index] = $(this).val();
+}
+console.log(options_values.data);
+display(options_values.data);	
+});
+
+$('.option_date_draw').on("change", ".option_add", function(event) {
+options_values.data.push($(this).val());
+display(options_values.data);
+});
+
+$('#option_model').on("click", ".option_save", function(event) { console.log("option updated...");
+form_data.updateItemFromForm(options_values.id,'data',options_values.data);
+$('#option_model').modal('hide');
+displayForm();
+});
+
+// option module dynamic option setting end...
+
+$('.form_clear').click(function(event) {
+if(!confirm('Are you Sure you want to clear all details ...?')){ return false; }
+var newid = form_data.totalForm(); 
+console.log(newid);
+form_data.clearForm();
+displayForm();
+});
+
+$('#show_form').on("click", ".form_delete_element", function(event) {
+if(!confirm('Are you Sure you want to delete this field ...?')){ return false; }
+//console.log($(this).data('id'));
+form_data.removeItemFromForm($(this).data('id'));
+displayForm();
+});
+
+$('#show_form').on("change", ".form_update_element_label", function(event) {
+console.log($(this).data('id'));
+console.log($(this).val());
+form_data.updateItemFromForm($(this).data('id'),'name',$(this).val());
+displayForm();
+});
+
+$('#show_form').on("change", ".form_update_element_placeholder", function(event) {
+console.log($(this).data('id'));
+console.log($(this).val());
+form_data.updateItemFromForm($(this).data('id'),'placeholder',$(this).val());
+displayForm();
+});
+
+$('#show_form').on("change", ".form_update_element_required", function(event) {
+console.log($(this).data('id'));
+console.log($(this).data("click"));
+form_data.updateItemFromForm($(this).data('id'),'required',$(this).data("click"));
+displayForm();
+});
+
+form_data.clearForm();
+
+
+$('.sortable-list').sortable({ 
+  connectWith: '.sortable-list',
+  update: function(event, ui) {
+    var changedList = this.id;
+    var order = $(this).sortable('toArray');
+    var positions = order.join(';');
+	var SortArray = form_data.listForm();
+	NewForm =[];
+	for(var n in order){ 
+	for(var m in SortArray) {	
+	if(SortArray[m].id == order[n]) {
+    NewForm.push(SortArray[m]);
+	break;
+	} 
+	}
+	}
+	sessionStorage.setItem('form_data', JSON.stringify(NewForm));
+	Form = JSON.parse(sessionStorage.getItem('form_data'));
+	displayForm();
+  }
+});
+
+});
+</script>
+
+
+
+</html>
